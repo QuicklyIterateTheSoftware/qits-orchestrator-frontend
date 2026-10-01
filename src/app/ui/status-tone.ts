@@ -23,13 +23,18 @@ const TONES: Readonly<Record<string, QitsBadgeTone>> = {
   SKIPPED: 'neutral',
 };
 
-/** The colour a card's left border and header strip take, one per tone. */
+/**
+ * The colour a card's left border and header strip take, one per tone.
+ *
+ * No orchestrator status maps to `highlight` today; the entry only keeps the record exhaustive.
+ */
 const TONE_COLOURS: Readonly<Record<QitsBadgeTone, string>> = {
   neutral: '#9ca3af',
   info: '#3b82f6',
   success: '#16a34a',
   warning: '#eab308',
   danger: '#dc2626',
+  highlight: '#8b5cf6',
 };
 
 /**
