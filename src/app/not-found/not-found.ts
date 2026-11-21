@@ -20,8 +20,8 @@ import { RouterLink } from '@angular/router';
   template: `
     <h1>No such page here</h1>
     <p>
-      This is the orchestrator. It lists the technical processes the platform runs against itself,
-      starts one, and shows what each step of a run did — and nothing else.
+      This is the orchestrator. The technical processes it runs against itself moved to the landing
+      app (qits-2359) — this host now only hands the two addresses it still answers off to it.
     </p>
     <p><a routerLink="/">Back to the processes</a></p>
   `,

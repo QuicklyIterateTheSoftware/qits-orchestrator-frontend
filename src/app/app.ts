@@ -1,31 +1,20 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { QitsNavSubmenu } from '@qits/ui-components';
-import { OrchestratorNav } from './nav/orchestrator-nav';
 
 /**
- * The shell: an outlet, and the process picker offered to the chrome as a sub-menu.
+ * The shell, and deliberately nothing else (qits-2359). The chrome this app is seen through — the
+ * sidebar, the top bar, the links out to the platform's other SPAs — is `QitsMainLayout` behind
+ * the `''` route (see app.routes.ts), so it survives navigation rather than being rebuilt here.
  *
- * The chrome these pages are seen through — the sidebar, the top bar, the links out to the other
- * SPAs — is `QitsMainLayout` behind the `''` route (see app.routes.ts), so it survives navigation
- * rather than being rebuilt here.
- *
- * <p><b>The sub-menu is declared here and rendered somewhere else, and that is the only arrangement
- * available.</b> `QitsMainLayout` is a route component — the pages are inside *its* outlet and this
- * shell is outside it — so nothing can be projected upwards into the sidebar. The template is
- * handed over instead, and the layout renders it under this application's navigation entry.
- *
- * <p>The shell rather than a page, and that part is a correctness one: `RouterOutlet` destroys the
- * outgoing component after creating the incoming one, so a declaration inside a page would be torn
- * down and rebuilt on every hop — and the picker would flicker on a menu that did not itself change.
+ * It used to also offer a process picker as a sub-menu, because picking a process *was* this
+ * app's navigation. Both of this app's addresses now hand the reader straight to the landing app
+ * instead, so there is nothing left for a sub-menu to pick between, and the outlet is the only
+ * thing this component owns.
  */
 @Component({
   selector: 'app-root',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RouterOutlet, QitsNavSubmenu, OrchestratorNav],
-  template: `
-    <ng-template qitsNavSubmenu><app-orchestrator-nav /></ng-template>
-    <router-outlet />
-  `,
+  imports: [RouterOutlet],
+  template: '<router-outlet />',
 })
 export class App {}

@@ -1,9 +1,10 @@
 import type { Routes } from '@angular/router';
 import { QitsMainLayout } from '@qits/ui-components';
 import { NotFound } from './not-found/not-found';
+import type { LandingRedirectData } from './ui/landing-redirect';
 
 /**
- * Two doors, both inside the platform chrome.
+ * Two doors, both inside the platform chrome, and both now hand-offs (qits-2359).
  *
  * **`QitsMainLayout` is the root route component** — the platform's convention, stated in the
  * component's own docs. Mounted this way the bar and the navigation mount once and survive every
@@ -11,27 +12,17 @@ import { NotFound } from './not-found/not-found';
  * hop. It is an eager import for that reason: it is not a page, it is the frame the pages arrive
  * in, and a frame that loaded in its own chunk would show a blank application while it did.
  *
- * **The landing page is a page, not a `redirectTo`.** Where `/` goes depends on an answer from the
- * service — one process means go straight to it, more than one means choose — and a redirect cannot
- * ask. So `''` renders a component that reads the list and then either forwards or draws it, which
- * is also the only place that can say "the service could not be reached" instead of bouncing to a
- * URL that will fail the same way.
- *
- * **The path shape repeats the API's, noun for noun.** `/processes/gc` is the page for what `GET
- * /orchestrator/api/processes/gc/runs` answers. A bare kind would have read better once and then
- * swallowed every future top-level route.
+ * **Neither address draws a page of its own content here any more.** The technical processes
+ * moved to the landing app — `''` to `/orchestrator`, `processes/:kind` to
+ * `/orchestrator/processes/:kind` with the kind filled in and percent-encoded — and each instead
+ * hands the reader to the landing app's own address, through the shared `LandingRedirect`, which
+ * reads whichever `data` its own mount carries, typed by {@link LandingRedirectData}.
  *
  * **Every address here starts at the root**, because this application is served at `/` on its own
  * host. It is a `system` app: its pages are about the platform's housekeeping rather than about one
  * project, so it has no `/<slug>/...` form and adds none — picking a project in the chrome leaves
  * for qits-projects instead. The API keeps its segment and is path-routed on every host, so the
- * calls below are unchanged.
- *
- * **A run is not its own address, and that is a decision.** A run belongs to a process and is only
- * ever read beside that process's run list, so the selected run is state on the process page rather
- * than a segment. It is the one thing here that a deep link cannot carry, and the cost is paid
- * knowingly: an operator sharing "look at this run" shares the process page, which opens on the
- * newest run — which is the one they meant nine times out of ten.
+ * calls the landing app makes are unchanged.
  */
 export const routes: Routes = [
   {
@@ -41,11 +32,19 @@ export const routes: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        loadComponent: () => import('./processes/processes-page').then((m) => m.ProcessesPage),
+        loadComponent: () => import('./ui/landing-redirect').then((m) => m.LandingRedirect),
+        data: {
+          landingPath: '/orchestrator',
+          moved: 'The technical processes moved to the landing app.',
+        } satisfies LandingRedirectData,
       },
       {
         path: 'processes/:kind',
-        loadComponent: () => import('./processes/process-page').then((m) => m.ProcessPage),
+        loadComponent: () => import('./ui/landing-redirect').then((m) => m.LandingRedirect),
+        data: {
+          landingPath: '/orchestrator/processes/:kind',
+          moved: 'The technical processes moved to the landing app.',
+        } satisfies LandingRedirectData,
       },
       { path: '**', component: NotFound },
     ],
